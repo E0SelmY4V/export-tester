@@ -31,7 +31,8 @@
 		"func2code": "^1.0.3",
 		"schema2class": "^2.5.2",
 		"accurtype": "^2.5.180",
-		"scpo-proce": "^1.1220.20"
+		"scpo-proce": "^1.1220.20",
+		"node": ""
 	},
 	"devDependencies": {
 		"prac-fn": "^1.1223.3"
@@ -39,8 +40,5 @@
 	"peerDependencies": {
 		"typescript": "",
 		"webpack": ""
-	},
-	"os": [
-		"win32"
-	]
+	}
 }
