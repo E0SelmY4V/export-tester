@@ -1,0 +1,3 @@
+import type { OfSchema } from 'accurtype'
+declare type TestConfig = OfSchema<typeof configSchema>
+declare const configSchema:{"$schema":"http://json-schema.org/draft-07/schema","type":"object","properties":{"imp":{"type":"object","properties":{"cjs":{"type":"string","default":""},"esm":{"type":"string","default":""}}},"req":{"type":"array","items":{"type":"string","enum":["ts","node-esm","node-cjs","webpack-esm","webpack-cjs"]},"default":["ts","node-esm","node-cjs","webpack-esm","webpack-cjs"]},"configFile":{"type":"object","properties":{"ts":{"type":"string","default":""},"webpack":{"type":"string","default":""}}},"sign":{"type":"string","default":"a"},"file":{"type":"string","default":null}}}

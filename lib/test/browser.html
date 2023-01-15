@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>平滑测试网页</title>
+    <script src="../build/main.js"></script>
+    <script src="./browser.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 20px;
+        }
+
+        input {
+            width: 3em;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="graphic"></canvas>
+    设置曲线类型：
+    <select value="0" id="se" onchange="ns.style.display=(parseInt(this.value)-1)?'none':'inline'">
+        <option value="1">多次函数</option>
+        <option value="2">椭圆函数</option>
+        <option value="3">三角函数</option>
+    </select><br />
+    <a id="ns">
+        <input value=1.8 onchange="setAt('minn', this)" />变换次数最小值(>0)<br />
+        <input value=2.6 onchange="setAt('maxn', this)" />变换次数最大值<br />
+    </a>
+    <input value=1.5 onchange="setAt('slope', this)" />变换曲线曲率最大/最小值(≥1)<br />
+    <input value=1 onchange="setAt('multi', this)" />变换减速倍数(>0)<br />
+    <button onclick="draw()">绘制！</button>
+    <button onclick="a=-a">改变方向</button>
+</body>
+
+</html>
