@@ -28,13 +28,17 @@
 	},
 	"homepage": "https://github.com/E0SelmY4V/ie-passer#readme",
 	"dependencies": {
-		"func2code": "^1.0.2",
+		"func2code": "^1.0.3",
 		"schema2class": "^2.5.2",
 		"accurtype": "^2.5.180",
 		"scpo-proce": "^1.1220.20"
 	},
 	"devDependencies": {
 		"prac-fn": "^1.1223.3"
+	},
+	"peerDependencies": {
+		"typescript": "",
+		"webpack": ""
 	},
 	"os": [
 		"win32"
