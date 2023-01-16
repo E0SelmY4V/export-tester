@@ -23,17 +23,18 @@ import tester = require('export-tester');
 ```js
 /// <reference path="export-tester/lib/tool.d.ts" />
 
-/// <reference path="someMod/declaration.d.ts" />
+/// <reference path="some-mod/declaration.d.ts" />
 // (If the module tested provide.)
 
 require('export-tester')(
   {
     sign: 'someMod', // The identifier of module imported.
-    file: __dirname + '/../someMod/index.js', // Module file.
+    file: __dirname + '/../some-mod/index.js', // Module file.
+    req: ['node-esm', 'ts'], // Test environments.
   },
   {
-    test0() { log(mod); },
-    test1() { log(mod.default); },
+    logMod() { log(someMod); },
+    checkDef() { log(someMod.default); },
     // ...
   }
 );
@@ -43,30 +44,28 @@ Output:
 
 ```text
 +-------------------
+|  Node ESM
+| D:\...\export-tester\lib\test\test.mjs
+|
++-"logMod":
+| ...
+|
++-"checkDef":
+| ...
+|
++-------------------
 |  TS
 | Testing cli
 | Compiling
 | D:\...\export-tester\lib\test\test.js
 | D:\...\export-tester\lib\test\test.ts
 |
-+"test0":
++-"logMod":
 | ...
 |
-+"test1":
++-"checkDef":
 | ...
 |
-+-------------------
-|  Node ESM
-| D:\...\export-tester\lib\test\test.mjs
-|
-+"test0":
-| ...
-|
-+"test1":
-| ...
-|
-
-...
 ```
 
 You can check the result of these tests running in defferent environment clearly.

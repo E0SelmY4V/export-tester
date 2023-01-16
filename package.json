@@ -2,9 +2,9 @@
 	"name": "export-tester",
 	"version": "0.9.0",
 	"description": "Can your code run in ESM, CJS or browser?",
-	"main": "lib/index.js",
+	"main": "lib/index",
 	"scripts": {
-		"build": "node ./lib/build.js"
+		"build": "node ./lib/build/do.js"
 	},
 	"repository": {
 		"type": "git",
@@ -18,7 +18,6 @@
 		"tests",
 		"export",
 		"tdd",
-		"ie",
 		"testing"
 	],
 	"author": "e0selmy4v",
@@ -27,15 +26,13 @@
 		"url": "https://github.com/E0SelmY4V/ie-passer/issues"
 	},
 	"homepage": "https://github.com/E0SelmY4V/ie-passer#readme",
-	"dependencies": {
+	"devDependencies": {
 		"func2code": "^1.0.3",
 		"schema2class": "^2.5.2",
 		"accurtype": "^2.5.180",
 		"scpo-proce": "^1.1220.20",
-		"node": ""
-	},
-	"devDependencies": {
-		"prac-fn": "^1.1223.3"
+		"typescript": "",
+		"webpack": ""
 	},
 	"peerDependencies": {
 		"typescript": "",
