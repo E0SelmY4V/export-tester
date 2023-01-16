@@ -30,10 +30,10 @@
 	},
 	"homepage": "https://github.com/E0SelmY4V/ie-passer#readme",
 	"devDependencies": {
-		"func2code": "^1.0.3",
-		"schema2class": "^2.5.2",
+		"func2code": "^1.0.4",
+		"schema2class": "^2.5.5",
 		"accurtype": "^2.5.180",
-		"scpo-proce": "^1.1220.20",
+		"scpo-proce": "^1.10116.0",
 		"typescript": "",
 		"webpack": ""
 	},
