@@ -2,9 +2,12 @@
 	"name": "export-tester",
 	"version": "0.9.0",
 	"description": "Can your code run in ESM, CJS or browser?",
-	"main": "lib/index",
+	"main": "./lib/index.js",
+	"module": "./lib/index.js",
+	"types": "./lib/index.ts",
 	"scripts": {
-		"build": "node ./lib/build/do.js"
+		"build": "node ./lib/build/do.js",
+		"dev": "node ./lib/build/do.js dev"
 	},
 	"repository": {
 		"type": "git",
@@ -36,6 +39,12 @@
 	},
 	"peerDependencies": {
 		"typescript": "",
+		"webpack-cli": "",
 		"webpack": ""
-	}
+	},
+	"bundledDependencies": [
+		"func2code",
+		"schema2class",
+		"scpo-proce"
+	]
 }

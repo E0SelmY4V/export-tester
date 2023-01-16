@@ -17,19 +17,6 @@ export const configSchema = {
 				}
 			}
 		},
-		"imp": {
-			"type": "object",
-			"properties": {
-				"cjs": {
-					"type": "string",
-					"default": ""
-				},
-				"esm": {
-					"type": "string",
-					"default": ""
-				}
-			}
-		},
 		"req": {
 			"type": "array",
 			"items": {
@@ -54,12 +41,34 @@ export const configSchema = {
 			"type": "object",
 			"properties": {
 				"ts": {
-					"type": "string",
-					"default": ""
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"default": ""
+						},
+						"cmd": {
+							"type": "string",
+							"default": ""
+						},
+						"cjsMod": {
+							"type": "boolean",
+							"default": false
+						}
+					}
 				},
 				"webpack": {
-					"type": "string",
-					"default": ""
+					"type": "object",
+					"properties": {
+						"path": {
+							"type": "string",
+							"default": ""
+						},
+						"cmd": {
+							"type": "string",
+							"default": ""
+						}
+					}
 				}
 			}
 		},
@@ -70,6 +79,10 @@ export const configSchema = {
 		"file": {
 			"type": "string",
 			"default": null
+		},
+		"pack": {
+			"type":"string",
+			"default": ""
 		}
 	}
 } as const

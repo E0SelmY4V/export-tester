@@ -1,9 +1,10 @@
 /// <reference path="exp.d.ts" />
 
 import type { Proce, CbNxt } from 'scpo-proce';
-import { InConfig, configSchema } from './types'
+import { InConfig, configSchema } from './types';
 import func2code = require('func2code');
-import * as fs from 'fs'
+import * as fs from 'fs';
+import * as fsp from 'fs/promises';
 import schema2class = require('schema2class');
 import scpoProce = require('scpo-proce');
 import child_process = require('child_process');
@@ -29,17 +30,16 @@ function allFunc<T extends string[]>(list: [...T], callback: Function) {
 	return (n: T[number]) => n in qObj ? (--i, delete qObj[n], i || callback(), true) : false;
 }
 function proce(...list: CbNxt<[Error | null], [Error | null], [string, Error, ...any[]]>[]) {
-	return scpoProce.snake(list).trap((n, ...errs) => console.error('\x1b[31m' + n + '\x1b[0m', ...errs));
+	return scpoProce.snake(list).trap((n, ...errs) => console.error(`\x1b[31m${n}\x1b[0m`, ...errs));
 }
 function fork(files: string[], todo: (err?: any) => void, conf: Config) {
-	conf.disp.path && files.forEach(e => rainbow('\x1b[4m\x1b[34m' + path.normalize(__dirname + e) + '\x1b[0m', conf));
+	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(__dirname + e)}\x1b[0m`, conf));
 	child_process.fork(__dirname + files[0]).on('close', todo);
 }
 type ModStr = { [I in ModType]: string };
 function getOut(type: ModType, ext: string) {
-	return (str: string, n: ModStr, cb: () => void) => scpoProce(todo =>
-		fs.writeFile(__dirname + '/test/test.' + ext, n[type] + str, todo)
-	).then(cb);
+	return (str: string, n: ModStr, cb: () => void) =>
+		fsp.writeFile(`${__dirname}/test/test.${ext}`, n[type] + str).then(cb);
 }
 function out<T extends EnvirType[]>(list: [...T], str: string, n: ModStr) {
 	const fin: { [I in (typeof outMap)[T[number]]]?: 0 } = {};
@@ -55,13 +55,14 @@ const outMap = {
 	'node-esm': 'esm',
 } as const;
 const outObj = {
-	esm: getOut('esm', 'mjs'),
-	cjs: getOut('cjs', 'cjs'),
+	esm: getOut('esm', 'm.js'),
+	cjs: getOut('cjs', 'c.js'),
 	ts: getOut('ts', 'ts'),
 } as const;
 const doObj = {
 	ts(conf: Config) {
-		rainbow('TS', 44)
+		rainbow('TS', 44);
+		const ts = conf.cfg.ts;
 		return proce(
 			todo => {
 				child_process.exec('tsc -v', todo);
@@ -70,11 +71,10 @@ const doObj = {
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Have you installed "tsc" ?', err, so, se);
 				rainbow('Compiling', conf);
-				child_process.exec('tsc' + (
-					conf.cfg.ts
-						? ' -p ' + conf.cfg.ts
-						: ''
-				) + ' ' + __dirname + '/test/test.ts', todo);
+				child_process.exec(
+					`tsc${ts.path ? ' -p ' + path : ''} ${__dirname}/test/test.ts ${ts.cmd || ''}`,
+					todo
+				);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Compilation failed.', err, so, se);
@@ -82,56 +82,64 @@ const doObj = {
 			},
 		);
 	},
-	'node-esm'(conf: Config) {
-		rainbow('Node ESM', 45);
+	node(conf: Config, n: 'm' | 'c') {
 		return proce(
 			todo => {
-				fork(['/test/test.mjs'], todo, conf);
+				rainbow('Copying test file', conf);
+				fs.cp(`${__dirname}/test/test.${n}.js`, `${__dirname}/test/node.${n}js`, todo);
+			},
+			todo => {
+				fork([`/test/node.${n}js`], todo, conf);
 			},
 		);
+	},
+	'node-esm'(conf: Config) {
+		rainbow('Node ESM', 45);
+		return doObj.node(conf, 'm');
 	},
 	'node-cjs'(conf: Config) {
 		rainbow('Node CJS', 43);
-		return proce(
-			todo => {
-				fork(['/test/test.cjs'], todo, conf);
-			},
-		);
+		return doObj.node(conf, 'c');
 	},
-	webpack(conf: Config, n: string) {
+	webpack(conf: Config, n: 'm' | 'c') {
+		const wp = conf.cfg.webpack;
+		const cfg = `${__dirname}/test/webpack.config.js`;
 		return proce(
 			todo => {
-				child_process.exec('webpack -h', todo)
+				child_process.exec('webpack -h', todo);
 				rainbow('Testing cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Have you installed "webpack" ?', err, so, se);
 				rainbow('Copying configs', conf);
-				if (conf.cfg.webpack) fs.cp(conf.cfg.webpack, __dirname + '/test/webpack.config.js', todo);
-				else fs.writeFile(__dirname + '/test/webpack.config.js', '', todo);
+				if (wp.path) fs.cp(wp.path, cfg, todo);
+				else fs.writeFile(cfg, '', todo);
 			},
 			(todo, ordo, err) => {
 				if (err) return ordo('Cannot copy the config JS file.', err);
 				rainbow('Modifying configs', conf);
-				fs.writeFile(__dirname + '/test/webpack.config.js', `
+				fs.writeFile(cfg, `
 					;
 					module || (module = {});
 					module.exports  || (module.exports = {});
 					module.exports.output  || (module.exports.output = {});
 					module.exports.output.path = __dirname;
-					module.exports.output.filename = 'webpack-${n}.js';
+					module.exports.output.filename = 'webpack.${n}.js';
 					module.exports.mode || (module.exports.mode = 'development');
-					delete module.exports.entry;
+					module.exports.entry = __dirname + '/test.${n}.js';
 				`, { flag: 'a' }, todo);
 			},
 			(todo, ordo, err) => {
 				if (err) return ordo('Cannot modify the config JS file.', err);
 				rainbow('Compiling', conf);
-				child_process.exec('webpack ' + __dirname + '/test/test.' + n + 'js -c ' + __dirname + '/test/webpack.config.js ', todo);
+				child_process.exec(
+					`webpack ${wp.cmd || ''} -c ${__dirname}/test/webpack.config.js`,
+					todo
+				);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Compilation failed.', err, so, se);
-				fork(['/test/webpack-' + n + '.js', '/test/test.' + n + 'js'], todo, conf);
+				fork([`/test/webpack.${n}.js`, `/test/test.${n}.js`], todo, conf);
 			},
 		);
 	},
@@ -144,22 +152,36 @@ const doObj = {
 		return doObj.webpack(conf, 'c');
 	},
 };
-function test(n: InConfig, tests: { [name: string]: Function }) {
-	const conf = factory(n);
-	const findPath = JSON.stringify('./' + path.relative(__dirname + '/test', conf.file));
-	const cjs = conf.imp.cjs || `var ${conf.sign}=require(${findPath});`;
-	const esm = conf.imp.esm || `import ${conf.sign} from ${findPath};`;
-	let str = '\nfunction log(...params) { console.log("| ", ...params) }\n';
-	for (var i in tests)
-		str += `
-		console.log('|\\n+-\\x1b[32m${JSON.stringify(i)}:\\x1b[0m');
-		(function(){
-			${func2code.getInnerCode(tests[i])}
-		})();`;
-	str += '\n ;console.log("|");';
-	const ned = arr2obj(conf.req);
-	out(conf.req, str, { cjs, esm, ts: esm })
-		.then(() => scpoProce.snake(conf.req.map(e => async todo => e in doObj ? (await doObj[e](conf), todo()) : todo())))
+function checkDir() {
+	return scpoProce.snake(
+		todo => fs.access(__dirname + '/test', fs.constants.F_OK, todo),
+		(todo, ordo, err) => err ? fs.mkdir(__dirname + '/test', todo) : todo()
+	);
 }
+async function test(n: InConfig, tests: { [name: string]: Function }) {
+	await checkDir();
+	await clear();
+	const conf = factory(n);
+	const findPath = JSON.stringify(conf.pack || './' + path.relative(__dirname + '/test', conf.file));
+	const cjs = `var ${conf.sign}=require(${findPath});`;
+	const esm = `import ${conf.sign} from ${findPath};`;
+	const ts = `import ${conf.sign} ${conf.cfg.ts.cjsMod ? `=require(${findPath})` : `from ${findPath}`};`;
+	let str = '\nfunction log(...params) { console.log("| ", ...params) }\n';
+	for (var i in tests) str += ''
+		+ `console.log('|\\n+-\\x1b[32m${JSON.stringify(i)}:\\x1b[0m');`
+		+ `(function(){\n\n`
+		+ func2code.getInnerCode(tests[i])
+		+ `\n\n})();`;
+	str += 'console.log("|");';
+	await out(conf.req, str, { cjs, esm, ts, });
+	await scpoProce.snake(conf.req.map(e => async todo => e in doObj ? (await doObj[e](conf), todo()) : todo()));
+	return;
+}
+async function clear() {
+	await checkDir();
+	const list = await fsp.readdir(__dirname + '/test');
+	await scpoProce.snake(list.map(e => todo => fs.unlink(`${__dirname}/test/${e}`, todo)));
+}
+test.clear = clear;
 export = test;
-exp.exports = test;
+exp.exports = test.test = test.default = test;
