@@ -10,6 +10,14 @@ import scpoProce = require('scpo-proce');
 import child_process = require('child_process');
 import path = require('path');
 
+/**
+ * Test the compatibility of your code.
+ * @version 1.0.0
+ * @license GPL-3.0-or-later
+ * @link https://github.com/E0SelmY4V/export-tester
+ */
+declare module '.';
+
 type ModType = 'esm' | 'cjs' | 'ts';
 type EnvirType = Exclude<InConfig['req'], undefined>[number]
 const factory = schema2class(configSchema);
