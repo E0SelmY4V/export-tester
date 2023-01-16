@@ -1,6 +1,6 @@
 {
 	"name": "export-tester",
-	"version": "0.9.0",
+	"version": "1.0.0",
 	"description": "Can your code run in ESM, CJS or browser?",
 	"main": "./lib/index.js",
 	"module": "./lib/index.js",
@@ -11,7 +11,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/E0SelmY4V/ie-passer.git"
+		"url": "git+https://github.com/E0SelmY4V/export-tester.git"
 	},
 	"keywords": [
 		"commonjs",
@@ -26,9 +26,9 @@
 	"author": "e0selmy4v",
 	"license": "GPL-3.0-or-later",
 	"bugs": {
-		"url": "https://github.com/E0SelmY4V/ie-passer/issues"
+		"url": "https://github.com/E0SelmY4V/export-tester/issues"
 	},
-	"homepage": "https://github.com/E0SelmY4V/ie-passer#readme",
+	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
 		"func2code": "^1.0.4",
 		"schema2class": "^2.5.5",

@@ -14,6 +14,20 @@ Environments supported:
 
 This test tool had been tested by the tests of this test tool.
 
+## Install
+
+You can clone this repo,
+
+```bash
+git clone https://github.com/E0SelmY4V/export-tester
+```
+
+or use npm to install.
+
+```bash
+npm install export-tester
+```
+
 ## Import
 
 ### CommonJS
