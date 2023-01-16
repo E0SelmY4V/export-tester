@@ -2,7 +2,17 @@
 
 ![Export Tester](lib/logo/logo256.png)
 
-This tool can test if your code can be import in ES Module, Common JS or Browser.
+This tool can test if your code can be import well in defferent environment.
+
+Environments supported:
+
+- `ts` Typescript
+- `node-cjs` CommonJS running in Node
+- `node-esm` ES Module running in Node
+- `webpack-cjs` CommonJS bundled by webpack
+- `webpack-esm` ES Module bundled by webpack
+
+This test tool had been tested by the tests of this test tool.
 
 ## Import
 
@@ -12,10 +22,16 @@ This tool can test if your code can be import in ES Module, Common JS or Browser
 const tester = require('export-tester');
 ```
 
-### ES Module
+### Typescript
 
 ```js
 import tester = require('export-tester');
+```
+
+### ES Module
+
+```js
+import tester from 'export-tester';
 ```
 
 ## Usage
@@ -29,8 +45,8 @@ import tester = require('export-tester');
 require('export-tester')(
   {
     sign: 'someMod', // The identifier of module imported.
-    file: __dirname + '/../some-mod/index.js', // Module file.
-    req: ['node-esm', 'ts'], // Test environments.
+    pack: 'some-mod', // Module name.
+    req: ['ts', 'node-esm'], // Test environments.
   },
   {
     logMod() { log(someMod); },
@@ -45,7 +61,7 @@ Output:
 ```text
 +-------------------
 |  Node ESM
-| D:\...\export-tester\lib\test\test.mjs
+| D:\...\export-tester\lib\test\node.mjs
 |
 +-"logMod":
 | ...
@@ -67,5 +83,3 @@ Output:
 | ...
 |
 ```
-
-You can check the result of these tests running in defferent environment clearly.

@@ -184,4 +184,4 @@ async function clear() {
 }
 test.clear = clear;
 export = test;
-exp.exports = test.test = test.default = test;
+exp.exports = test.test = test;
