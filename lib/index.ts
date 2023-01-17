@@ -10,7 +10,7 @@ import path = require('path');
 
 /**
  * Test the compatibility of your code.
- * @version 1.0.0
+ * @version 1.0.1
  * @license GPL-3.0-or-later
  * @link https://github.com/E0SelmY4V/export-tester
  */
@@ -36,7 +36,7 @@ function allFunc<T extends string[]>(list: [...T], callback: Function) {
 	return (n: T[number]) => n in qObj ? (--i, delete qObj[n], i || callback(), true) : false;
 }
 function proce(...list: CbNxt<[Error | null], [Error | null], [string, Error, ...any[]]>[]) {
-	return scpoProce.snake(list).trap((n, ...errs) => console.error(`\x1b[31m${n}\x1b[0m`, ...errs));
+	return scpoProce.snake(list).trap((n, ...errs) => console.error(`| \x1b[31m${n}\x1b[0m`, ...errs));
 }
 function fork(files: string[], todo: (err?: any) => void, conf: Config) {
 	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(__dirname + e)}\x1b[0m`, conf));

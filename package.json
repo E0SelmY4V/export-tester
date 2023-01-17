@@ -1,6 +1,6 @@
 {
 	"name": "export-tester",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Can your code run in ESM, CJS or browser?",
 	"main": "./lib/index.js",
 	"module": "./lib/index.js",
@@ -31,8 +31,7 @@
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
 		"typescript": "",
-		"@types/node": "",
-		"webpack": ""
+		"@types/node": ""
 	},
 	"peerDependencies": {
 		"typescript": "",
