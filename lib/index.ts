@@ -1,5 +1,3 @@
-/// <reference path="exp.d.ts" />
-
 import type { Proce, CbNxt } from 'scpo-proce';
 import { InConfig, configSchema } from './types';
 import func2code = require('func2code');
@@ -192,4 +190,4 @@ async function clear() {
 }
 test.clear = clear;
 export = test;
-exp.exports = test.test = test;
+test.test = test;

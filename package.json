@@ -30,10 +30,6 @@
 	},
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
-		"func2code": "^1.0.4",
-		"schema2class": "^2.5.5",
-		"accurtype": "^2.5.180",
-		"scpo-proce": "^1.10116.0",
 		"typescript": "",
 		"@types/node": "",
 		"webpack": ""
@@ -43,9 +39,10 @@
 		"webpack-cli": "",
 		"webpack": ""
 	},
-	"bundledDependencies": [
-		"func2code",
-		"schema2class",
-		"scpo-proce"
-	]
+	"dependencies": {
+		"func2code": "^1.0.4",
+		"schema2class": "^2.5.5",
+		"accurtype": "^2.5.180",
+		"scpo-proce": "^1.10116.0"
+	}
 }
