@@ -35,6 +35,7 @@
 		"accurtype": "^2.5.180",
 		"scpo-proce": "^1.10116.0",
 		"typescript": "",
+		"@types/node": "",
 		"webpack": ""
 	},
 	"peerDependencies": {
