@@ -3,8 +3,6 @@
 	"version": "1.0.1",
 	"description": "Can your code run in ESM, CJS or browser?",
 	"main": "./lib/index.js",
-	"module": "./lib/index.js",
-	"types": "./lib/index.ts",
 	"scripts": {
 		"build": "node ./lib/build/do.js",
 		"dev": "node ./lib/build/do.js dev"
@@ -30,18 +28,13 @@
 	},
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
-		"typescript": "",
-		"@types/node": ""
-	},
-	"peerDependencies": {
-		"typescript": "",
-		"webpack-cli": "",
-		"webpack": ""
+		"typescript": ""
 	},
 	"dependencies": {
 		"func2code": "^1.0.4",
 		"schema2class": "^2.5.5",
 		"accurtype": "^2.5.180",
-		"scpo-proce": "^1.10116.0"
+		"scpo-proce": "^1.10116.0",
+		"@types/node": ""
 	}
 }
