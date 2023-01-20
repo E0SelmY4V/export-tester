@@ -29,7 +29,7 @@
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
 		"typescript": "",
-		"lethal-build": "^1.0.1"
+		"lethal-build": "^1.1.0"
 	},
 	"dependencies": {
 		"func2code": "^1.0.4",
