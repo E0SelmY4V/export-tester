@@ -28,7 +28,8 @@
 	},
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
-		"typescript": ""
+		"typescript": "",
+		"lethal-build": "^1.0.1"
 	},
 	"dependencies": {
 		"func2code": "^1.0.4",
