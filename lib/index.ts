@@ -71,14 +71,14 @@ const doObj = {
 		const ts = conf.cfg.ts;
 		return proce(
 			todo => {
-				child_process.exec('tsc -v', todo);
+				child_process.exec('npx tsc -v', todo);
 				rainbow('Testing cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Have you installed "tsc" ?', err, so, se);
 				rainbow('Compiling', conf);
 				child_process.exec(
-					`tsc${ts.path ? ' -p ' + path : ''} ${__dirname}/test/test.ts ${ts.cmd || ''}`,
+					`npx tsc${ts.path ? ' -p ' + path : ''} ${__dirname}/test/test.ts ${ts.cmd || ''}`,
 					todo
 				);
 			},
@@ -112,7 +112,7 @@ const doObj = {
 		const cfg = `${__dirname}/test/webpack.config.js`;
 		return proce(
 			todo => {
-				child_process.exec('webpack -h', todo);
+				child_process.exec('npx webpack -h', todo);
 				rainbow('Testing cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
@@ -139,7 +139,7 @@ const doObj = {
 				if (err) return ordo('Cannot modify the config JS file.', err);
 				rainbow('Compiling', conf);
 				child_process.exec(
-					`webpack ${wp.cmd || ''} -c ${__dirname}/test/webpack.config.js`,
+					`npx webpack ${wp.cmd || ''} -c ${__dirname}/test/webpack.config.js`,
 					todo
 				);
 			},
