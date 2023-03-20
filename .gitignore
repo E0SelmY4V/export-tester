@@ -1,0 +1,5 @@
+lib/*.js
+lib/types*
+build
+package-lock.json
+node_modules

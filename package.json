@@ -2,11 +2,18 @@
 	"name": "export-tester",
 	"version": "1.0.2",
 	"description": "Can your code run in ESM, CJS or browser?",
-	"main": "./lib/index.js",
+	"main": "./build/index.js",
+	"types": "./build/index.d.ts",
 	"scripts": {
 		"build": "node ./lib/build/do.js",
 		"dev": "node ./lib/build/do.js dev"
 	},
+	"files": [
+		"build",
+		"README.md",
+		"lib/logo/logo256.png",
+		"LICENSE"
+	],
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/E0SelmY4V/export-tester.git"

@@ -12,13 +12,15 @@
 		"strictPropertyInitialization": true,
 		"strictBindCallApply": true,
 		"noImplicitThis": true,
+		"outDir": "./build",
+		"declaration": true,
 	},
 	"exclude": [
+		"./build",
 		"node_modules",
 		"**/node_modules/*"
 	],
-	"files": [
-		"./lib/index.ts",
-		"./lib/types.ts",
+	"include": [
+		"./lib",
 	],
 }
