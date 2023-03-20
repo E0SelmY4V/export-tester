@@ -1,13 +1,3 @@
-import type { Proce, CbNxt } from 'scpo-proce';
-import { InConfig, configSchema } from './types';
-import func2code = require('func2code');
-import * as fs from 'fs';
-import * as fsp from 'fs/promises';
-import schema2class = require('schema2class');
-import scpoProce = require('scpo-proce');
-import child_process = require('child_process');
-import path = require('path');
-
 /**
  * Test the compatibility of your code.
  * @version 1.0.2
@@ -16,10 +6,20 @@ import path = require('path');
  */
 declare module '.';
 
+import * as child_process from 'child_process';
+import * as fs from 'fs';
+import * as fsp from 'fs/promises';
+import func2code from 'func2code';
+import * as path from 'path';
+import type { CbNxt } from 'scpo-proce';
+import { configSchema, InConfig } from './types';
+import schema2class = require('schema2class');
+import scpoProce = require('scpo-proce');
+
 type ModType = 'esm' | 'cjs' | 'ts';
-type EnvirType = Exclude<InConfig['req'], undefined>[number]
+type EnvirType = Exclude<InConfig['req'], undefined>[number];
 const factory = schema2class(configSchema);
-type Config = ReturnType<typeof factory>
+type Config = ReturnType<typeof factory>;
 
 function arr2obj<T extends readonly string[]>(arr: [...T]) {
 	const obj = {} as { [I in T[number]]: 0 };
@@ -36,7 +36,7 @@ function allFunc<T extends string[]>(list: [...T], callback: Function) {
 	return (n: T[number]) => n in qObj ? (--i, delete qObj[n], i || callback(), true) : false;
 }
 function proce(...list: CbNxt<[Error | null], [Error | null], [string, Error, ...any[]]>[]) {
-	return scpoProce.snake(list).trap((n, ...errs) => console.error(`| \x1b[31m${n}\x1b[0m`, ...errs));
+	return scpoProce.snake(list).trap((n: void | string, ...errs) => console.error(`| \x1b[31m${n}\x1b[0m`, ...errs));
 }
 function fork(files: string[], todo: (err?: any) => void, conf: Config) {
 	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(__dirname + e)}\x1b[0m`, conf));
@@ -52,6 +52,9 @@ function out<T extends EnvirType[]>(list: [...T], str: string, n: ModStr) {
 	return scpoProce.snake(list.map(e => outMap[e]).map(e =>
 		(todo: (() => void)) => e in fin ? todo() : (fin[e] = 0, outObj[e](str, n, todo))
 	));
+}
+function waitCli(todo: (err: Error) => void, proc: child_process.ChildProcess) {
+	setTimeout(() => (todo(Error('Cli not respond')), proc.kill()), 5000);
 }
 const outMap = {
 	'ts': 'ts',
@@ -71,7 +74,8 @@ const doObj = {
 		const ts = conf.cfg.ts;
 		return proce(
 			todo => {
-				child_process.exec('npx tsc -v', todo);
+				const proc = child_process.exec('npx tsc -v', todo);
+				waitCli(todo, proc);
 				rainbow('Testing cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
@@ -112,7 +116,8 @@ const doObj = {
 		const cfg = `${__dirname}/test/webpack.config.js`;
 		return proce(
 			todo => {
-				child_process.exec('npx webpack -h', todo);
+				const proc = child_process.exec('npx webpack -h', todo);
+				waitCli(todo, proc);
 				rainbow('Testing cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
@@ -164,8 +169,7 @@ function checkDir() {
 		(todo, ordo, err) => err ? fs.mkdir(__dirname + '/test', todo) : todo()
 	);
 }
-async function test(n: InConfig, tests: { [name: string]: Function }) {
-	await checkDir();
+async function test(n: InConfig, tests: { [name: string]: Function; }) {
 	await clear();
 	const conf = factory(n);
 	const findPath = JSON.stringify(conf.pack || './' + path.relative(__dirname + '/test', conf.file));

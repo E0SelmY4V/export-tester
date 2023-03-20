@@ -42,7 +42,7 @@
 		"func2code": "^1.0.4",
 		"schema2class": "^2.5.5",
 		"accurtype": "^2.5.180",
-		"scpo-proce": "^1.10116.0",
+		"scpo-proce": "^2.0.0",
 		"@types/node": ""
 	}
 }
