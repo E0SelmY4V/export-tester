@@ -38,14 +38,14 @@ function allFunc<T extends string[]>(list: [...T], callback: Function) {
 function proce(...list: CbNxt<[Error | null], [Error | null], [string, Error, ...any[]]>[]) {
 	return scpoProce.snake(list).trap((n: void | string, ...errs) => console.error(`| \x1b[31m${n}\x1b[0m`, ...errs));
 }
-function fork(files: string[], todo: (err?: any) => void, conf: Config) {
-	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(__dirname + e)}\x1b[0m`, conf));
-	child_process.fork(__dirname + files[0]).on('close', todo);
+function fork(files: [string, ...string[]], todo: (err?: any) => void, conf: Config) {
+	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(testsDir + e)}\x1b[0m`, conf));
+	child_process.fork(testsDir + files[0]).on('close', todo);
 }
 type ModStr = { [I in ModType]: string };
 function getOut(type: ModType, ext: string) {
 	return (str: string, n: ModStr, cb: () => void) =>
-		fsp.writeFile(`${__dirname}/test/test.${ext}`, n[type] + str).then(cb);
+		fsp.writeFile(`${testsDir}/test.${ext}`, n[type] + str).then(cb);
 }
 function out<T extends EnvirType[]>(list: [...T], str: string, n: ModStr) {
 	const fin: { [I in (typeof outMap)[T[number]]]?: 0 } = {};
@@ -56,6 +56,7 @@ function out<T extends EnvirType[]>(list: [...T], str: string, n: ModStr) {
 function waitCli(todo: (err: Error) => void, proc: child_process.ChildProcess) {
 	setTimeout(() => (todo(Error('Cli not respond')), proc.kill()), 5000);
 }
+const testsDir = path.join(__dirname, '../runtime');
 const outMap = {
 	'ts': 'ts',
 	'webpack-cjs': 'cjs',
@@ -82,13 +83,13 @@ const doObj = {
 				if (err) return ordo('Have you installed "tsc" ?', err, so, se);
 				rainbow('Compiling', conf);
 				child_process.exec(
-					`npx tsc${ts.path ? ' -p ' + path : ''} ${__dirname}/test/test.ts ${ts.cmd || ''}`,
+					`npx tsc${ts.path ? ' -p ' + path : ''} ${testsDir}/test.ts ${ts.cmd || ''}`,
 					todo
 				);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Compilation failed.', err, so, se);
-				fork(['/test/test.js', '/test/test.ts'], todo, conf);
+				fork(['/test.js', '/test.ts'], todo, conf);
 			},
 		);
 	},
@@ -96,10 +97,10 @@ const doObj = {
 		return proce(
 			todo => {
 				rainbow('Copying test file', conf);
-				fs.cp(`${__dirname}/test/test.${n}.js`, `${__dirname}/test/node.${n}js`, todo);
+				fs.cp(`${testsDir}/test.${n}.js`, `${testsDir}/node.${n}js`, todo);
 			},
 			todo => {
-				fork([`/test/node.${n}js`], todo, conf);
+				fork([`/node.${n}js`], todo, conf);
 			},
 		);
 	},
@@ -113,7 +114,7 @@ const doObj = {
 	},
 	webpack(conf: Config, n: 'm' | 'c') {
 		const wp = conf.cfg.webpack;
-		const cfg = `${__dirname}/test/webpack.config.js`;
+		const cfg = `${testsDir}/webpack.config.js`;
 		return proce(
 			todo => {
 				const proc = child_process.exec('npx webpack -h', todo);
@@ -144,13 +145,13 @@ const doObj = {
 				if (err) return ordo('Cannot modify the config JS file.', err);
 				rainbow('Compiling', conf);
 				child_process.exec(
-					`npx webpack ${wp.cmd || ''} -c ${__dirname}/test/webpack.config.js`,
+					`npx webpack ${wp.cmd || ''} -c ${testsDir}/webpack.config.js`,
 					todo
 				);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Compilation failed.', err, so, se);
-				fork([`/test/webpack.${n}.js`, `/test/test.${n}.js`], todo, conf);
+				fork([`/webpack.${n}.js`, `/test.${n}.js`], todo, conf);
 			},
 		);
 	},
@@ -165,14 +166,14 @@ const doObj = {
 };
 function checkDir() {
 	return scpoProce.snake(
-		todo => fs.access(__dirname + '/test', fs.constants.F_OK, todo),
-		(todo, ordo, err) => err ? fs.mkdir(__dirname + '/test', todo) : todo()
+		todo => fs.access(testsDir, fs.constants.F_OK, todo),
+		(todo, ordo, err) => err ? fs.mkdir(testsDir, todo) : todo()
 	);
 }
 async function test(n: InConfig, tests: { [name: string]: Function; }) {
 	await clear();
 	const conf = factory(n);
-	const findPath = JSON.stringify(conf.pack || './' + path.relative(__dirname + '/test', conf.file));
+	const findPath = JSON.stringify(conf.pack || './' + path.relative(testsDir, conf.file));
 	const cjs = `var ${conf.sign}=require(${findPath});`;
 	const esm = `import ${conf.sign} from ${findPath};`;
 	const ts = `import ${conf.sign} ${conf.cfg.ts.cjsMod ? `=require(${findPath})` : `from ${findPath}`};`;
@@ -189,8 +190,8 @@ async function test(n: InConfig, tests: { [name: string]: Function; }) {
 }
 async function clear() {
 	await checkDir();
-	const list = await fsp.readdir(__dirname + '/test');
-	await scpoProce.snake(list.map(e => todo => fs.unlink(`${__dirname}/test/${e}`, todo)));
+	const list = await fsp.readdir(testsDir);
+	await scpoProce.snake(list.map(e => todo => fs.unlink(`${testsDir}/${e}`, todo)));
 }
 test.clear = clear;
 export = test;

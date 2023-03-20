@@ -35,14 +35,15 @@
 	},
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
+		"lethal-build": "^1.1.0",
 		"typescript": "",
-		"lethal-build": "^1.1.0"
+		"webpack-cli": "^5.0.1"
 	},
 	"dependencies": {
+		"@types/node": "",
+		"accurtype": "^2.5.180",
 		"func2code": "^1.0.4",
 		"schema2class": "^2.5.5",
-		"accurtype": "^2.5.180",
-		"scpo-proce": "^2.0.0",
-		"@types/node": ""
+		"scpo-proce": "^2.0.0"
 	}
 }
