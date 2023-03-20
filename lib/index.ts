@@ -54,7 +54,7 @@ function out<T extends EnvirType[]>(list: [...T], str: string, n: ModStr) {
 	));
 }
 function waitCli(todo: (err: Error) => void, proc: child_process.ChildProcess) {
-	setTimeout(() => (todo(Error('Cli not respond')), proc.kill()), 5000);
+	return setTimeout(() => (todo(Error('Cli not respond')), proc.kill()), 5000);
 }
 const testsDir = path.join(__dirname, '../runtime');
 const outMap = {
@@ -73,17 +73,26 @@ const doObj = {
 	ts(conf: Config) {
 		rainbow('TS', 44);
 		const ts = conf.cfg.ts;
+		let timer: ReturnType<typeof waitCli>;
+		let cmd = 'tsc';
 		return proce(
 			todo => {
-				const proc = child_process.exec('npx tsc -v', todo);
-				waitCli(todo, proc);
+				child_process.exec(`${cmd} -v`, todo);
 				rainbow('Testing cli', conf);
+			},
+			(todo, ordo, err) => {
+				if (!err) return todo(err);
+				cmd = `npx ${cmd}`;
+				const proc = child_process.exec(`${cmd} -v`, todo);
+				timer = waitCli(todo, proc);
+				rainbow('Testing npx cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Have you installed "tsc" ?', err, so, se);
+				clearTimeout(timer);
 				rainbow('Compiling', conf);
 				child_process.exec(
-					`npx tsc${ts.path ? ' -p ' + path : ''} ${testsDir}/test.ts ${ts.cmd || ''}`,
+					`${cmd} ${ts.path ? `-p ${ts.path}` : ''} ${testsDir}/test.ts ${ts.cmd || ''}`,
 					todo
 				);
 			},
@@ -115,14 +124,23 @@ const doObj = {
 	webpack(conf: Config, n: 'm' | 'c') {
 		const wp = conf.cfg.webpack;
 		const cfg = `${testsDir}/webpack.config.js`;
+		let timer: ReturnType<typeof waitCli>;
+		let cmd = 'webpack';
 		return proce(
 			todo => {
-				const proc = child_process.exec('npx webpack -h', todo);
-				waitCli(todo, proc);
+				child_process.exec(`${cmd} -h`, todo);
 				rainbow('Testing cli', conf);
+			},
+			(todo, ordo, err) => {
+				if (!err) return todo(err);
+				cmd = `npx ${cmd}`;
+				const proc = child_process.exec(`${cmd} -h`, todo);
+				timer = waitCli(todo, proc);
+				rainbow('Testing npx cli', conf);
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Have you installed "webpack" ?', err, so, se);
+				clearTimeout(timer);
 				rainbow('Copying configs', conf);
 				if (wp.path) fs.cp(wp.path, cfg, todo);
 				else fs.writeFile(cfg, '', todo);
@@ -145,7 +163,7 @@ const doObj = {
 				if (err) return ordo('Cannot modify the config JS file.', err);
 				rainbow('Compiling', conf);
 				child_process.exec(
-					`npx webpack ${wp.cmd || ''} -c ${testsDir}/webpack.config.js`,
+					`${cmd} ${wp.cmd || ''} -c ${testsDir}/webpack.config.js`,
 					todo
 				);
 			},
