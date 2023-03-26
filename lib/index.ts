@@ -36,21 +36,23 @@ function allFunc<T extends string[]>(list: [...T], callback: Function) {
 	return (n: T[number]) => n in qObj ? (--i, delete qObj[n], i || callback(), true) : false;
 }
 function proce(...list: CbNxt<[Error | null], [Error | null], [string, Error, ...any[]]>[]) {
-	return scpoProce.snake(list).trap((n: void | string, ...errs) => console.error(`| \x1b[31m${n}\x1b[0m`, ...errs));
+	return scpoProce.snake(list).trap((n: void | string, ...errs) => {
+		console.error(`| \x1b[31m${n}\x1b[0m`, ...errs);
+		return n;
+	});
 }
-function fork(files: [string, ...string[]], todo: (err?: any) => void, conf: Config) {
+function fork(files: [string, ...string[]], todo: (err?: any) => void, ordo: (msg: string, err: Error) => void, conf: Config) {
 	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(testsDir + e)}\x1b[0m`, conf));
-	child_process.fork(testsDir + files[0]).on('close', todo);
+	child_process.fork(testsDir + files[0]).on('close', num => num ? ordo('RE', Error(`Exit code is ${num}`)) : todo());
 }
 type ModStr = { [I in ModType]: string };
 function getOut(type: ModType, ext: string) {
-	return (str: string, n: ModStr, cb: () => void) =>
-		fsp.writeFile(`${testsDir}/test.${ext}`, n[type] + str).then(cb);
+	return (str: string, n: ModStr) => fsp.writeFile(`${testsDir}/test.${ext}`, n[type] + str);
 }
 function out<T extends EnvirType[]>(list: [...T], str: string, n: ModStr) {
 	const fin: { [I in (typeof outMap)[T[number]]]?: 0 } = {};
 	return scpoProce.snake(list.map(e => outMap[e]).map(e =>
-		(todo: (() => void)) => e in fin ? todo() : (fin[e] = 0, outObj[e](str, n, todo))
+		async (todo: (() => void)) => e in fin ? todo() : (fin[e] = 0, await outObj[e]?.(str, n), todo())
 	));
 }
 function waitCli(todo: (err: Error) => void, proc: child_process.ChildProcess) {
@@ -98,7 +100,7 @@ const doObj = {
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Compilation failed.', err, so, se);
-				fork(['/test.js', '/test.ts'], todo, conf);
+				fork(['/test.js', '/test.ts'], todo, ordo, conf);
 			},
 		);
 	},
@@ -108,8 +110,8 @@ const doObj = {
 				rainbow('Copying test file', conf);
 				fs.cp(`${testsDir}/test.${n}.js`, `${testsDir}/node.${n}js`, todo);
 			},
-			todo => {
-				fork([`/node.${n}js`], todo, conf);
+			(todo, ordo) => {
+				fork([`/node.${n}js`], todo, ordo, conf);
 			},
 		);
 	},
@@ -169,7 +171,7 @@ const doObj = {
 			},
 			(todo, ordo, err, so, se) => {
 				if (err) return ordo('Compilation failed.', err, so, se);
-				fork([`/webpack.${n}.js`, `/test.${n}.js`], todo, conf);
+				fork([`/webpack.${n}.js`, `/test.${n}.js`], todo, ordo, conf);
 			},
 		);
 	},
@@ -181,7 +183,7 @@ const doObj = {
 		rainbow('webpack CJS', 46);
 		return doObj.webpack(conf, 'c');
 	},
-};
+} as const;
 function checkDir() {
 	return scpoProce.snake(
 		todo => fs.access(testsDir, fs.constants.F_OK, todo),
@@ -203,8 +205,15 @@ async function test(n: InConfig, tests: { [name: string]: Function; }) {
 		+ `\n\n})();`;
 	str += 'console.log("|");';
 	await out(conf.req, str, { cjs, esm, ts, });
-	await scpoProce.snake(conf.req.map(e => async todo => e in doObj ? (await doObj[e](conf), todo()) : todo()));
-	return;
+	const detail: { [name: string]: string; } = {};
+	let err = 0;
+	await scpoProce.snake(conf.req.map(e => async todo => (
+		e in doObj
+			? (detail[e] = await doObj[e](conf), detail[e] && err++)
+			: (detail[e] = 'No such testing enviroument', err++),
+		todo()
+	)));
+	return { err, detail };
 }
 async function clear() {
 	await checkDir();

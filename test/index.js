@@ -7,10 +7,14 @@ require('..')(
 				cjsMod: true,
 			},
 		},
+		req: ['node-cjs', 'asd'],
 	},
 	{
 		imp() {
 			console.log(s2c);
 		},
+		err() {
+			throw Error('ssd');
+		},
 	},
-);
+).then(e => console.log(e));
