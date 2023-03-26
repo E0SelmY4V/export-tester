@@ -5,8 +5,8 @@
 	"main": "./build/index.js",
 	"types": "./build/index.d.ts",
 	"scripts": {
-		"build": "node ./lib/build/do.js",
-		"dev": "node ./lib/build/do.js dev"
+		"build": "node bud",
+		"build-dev": "node bud dev"
 	},
 	"files": [
 		"build",
