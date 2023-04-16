@@ -11,7 +11,8 @@ import * as fs from 'fs';
 import * as fsp from 'fs/promises';
 import func2code from 'func2code';
 import * as path from 'path';
-import scpoProce, { CbNxt } from 'scpo-proce';
+import type { CbNxt } from 'scpo-proce';
+import * as scpoProce from 'scpo-proce';
 import { configSchema, InConfig } from './types';
 import schema2class = require('schema2class');
 
@@ -216,12 +217,16 @@ async function test(n: InConfig, tests: { [name: string]: Function; }) {
 	await out(conf.req, str, { cjs, esm, ts, });
 	const detail: { [name: string]: string; } = {};
 	let err = 0;
-	await scpoProce.snake(conf.req.map(e => async todo => (
-		e in doObj
-			? (detail[e] = await doObj[e](conf), detail[e] && err++)
-			: (detail[e] = 'No such testing enviroument', err++),
-		todo()
-	)));
+	await scpoProce.snake(conf.req.map(e => async todo => {
+		if (e in doObj) {
+			const info = await doObj[e](conf);
+			info && (detail[e] = info, err++);
+		} else {
+			detail[e] = 'No such testing enviroument';
+			err++;
+		}
+		todo();
+	}));
 	return { err, detail };
 }
 async function clear() {
