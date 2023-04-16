@@ -9,9 +9,9 @@
 		"build-dev": "node bud dev"
 	},
 	"files": [
-		"build",
+		"dist",
 		"README.md",
-		"lib/logo/logo256.png",
+		"lib",
 		"LICENSE"
 	],
 	"repository": {

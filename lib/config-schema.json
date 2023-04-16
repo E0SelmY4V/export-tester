@@ -35,6 +35,19 @@
 				"webpack-cjs"
 			]
 		},
+		"mode": {
+			"type": "object",
+			"properties": {
+				"imp": {
+					"type": "string",
+					"enum": [
+						"all",
+						"def"
+					],
+					"default": "all"
+				}	
+			}
+		},
 		"cfg": {
 			"type": "object",
 			"properties": {
@@ -79,7 +92,7 @@
 			"default": null
 		},
 		"pack": {
-			"type":"string",
+			"type": "string",
 			"default": ""
 		}
 	}

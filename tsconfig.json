@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"module": "CommonJS",
 		"moduleResolution": "Node",
-		"target": "ESNext",
+		"target": "ES5",
 		"strictNullChecks": true,
 		"strictFunctionTypes": true,
 		"allowSyntheticDefaultImports": true,
@@ -12,11 +12,11 @@
 		"strictPropertyInitialization": true,
 		"strictBindCallApply": true,
 		"noImplicitThis": true,
-		"outDir": "./build",
+		"outDir": "./dist",
 		"declaration": true,
+		"sourceMap": true,
 	},
 	"exclude": [
-		"./build",
 		"node_modules",
 		"**/node_modules/*"
 	],
