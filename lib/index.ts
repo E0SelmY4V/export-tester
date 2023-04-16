@@ -1,6 +1,6 @@
 /**
  * Test the compatibility of your code.
- * @version 1.0.9
+ * @version 1.0.10
  * @license GPL-3.0-or-later
  * @link https://github.com/E0SelmY4V/export-tester
  */

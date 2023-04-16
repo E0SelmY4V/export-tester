@@ -1,6 +1,6 @@
 {
 	"name": "export-tester",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"description": "Can your code run in ESM, CJS or browser?",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
