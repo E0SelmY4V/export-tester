@@ -2,8 +2,9 @@
 	"name": "export-tester",
 	"version": "1.0.9",
 	"description": "Can your code run in ESM, CJS or browser?",
-	"main": "./build/index.js",
-	"types": "./build/index.d.ts",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"scripts": {
 		"build": "node bud",
 		"build-dev": "node bud dev"
@@ -36,8 +37,7 @@
 	"homepage": "https://github.com/E0SelmY4V/export-tester#readme",
 	"devDependencies": {
 		"lethal-build": "^1.1.0",
-		"typescript": "",
-		"webpack-cli": "^5.0.1"
+		"typescript": ""
 	},
 	"dependencies": {
 		"@types/node": "",
