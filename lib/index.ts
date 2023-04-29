@@ -205,7 +205,10 @@ async function test(n: InConfig, tests: { [name: string]: Function; }) {
 		all: `import * as ${conf.sign} from ${findPath};`,
 		def: `import ${conf.sign} from ${findPath};`,
 	}[conf.mode.imp];
-	const ts = {
+	const ts = (conf.cfg.ts.noChk
+		? '//@ts-nocheck\n'
+		: ''
+	) + {
 		all: `import * as ${conf.sign} from ${findPath};`,
 		def: `import ${conf.sign} from ${findPath};`,
 		cjs: `import ${conf.sign} = require(${findPath});`,

@@ -7,8 +7,8 @@ require('..')(
 				cjsMod: true,
 			},
 		},
-		req: ['node-cjs', 'asd'],
-		disp: true,
+		req: ['node-cjs', 'asd', 'ts'],
+		disp: false,
 	},
 	{
 		imp() {

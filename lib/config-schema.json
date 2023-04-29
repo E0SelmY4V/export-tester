@@ -49,7 +49,7 @@
 						"def"
 					],
 					"default": "all"
-				}	
+				}
 			}
 		},
 		"cfg": {
@@ -69,6 +69,10 @@
 						"cjsMod": {
 							"type": "boolean",
 							"default": false
+						},
+						"noChk": {
+							"type": "boolean",
+							"default": true
 						}
 					}
 				},
