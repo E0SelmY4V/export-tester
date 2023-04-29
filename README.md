@@ -51,15 +51,18 @@ import tester from 'export-tester';
 require('export-tester')(
   {
     sign: 'someMod', // The identifier of module imported.
-    pack: 'some-mod', // Module name.
+    file: `${__dirname}/lib/index.js`, // Entry file.
     req: ['ts', 'node-esm'], // Test environments.
   },
   {
     logMod() { log(someMod); },
     checkDef() { log(someMod.default); },
     // ...
-  }
-);
+  },
+).then(({ err, detail }) => {
+  if (err) console.error(detail);
+  process.exit(err);
+});
 ```
 
 Output:

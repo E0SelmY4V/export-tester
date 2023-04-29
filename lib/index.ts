@@ -1,6 +1,6 @@
 /**
  * Test the compatibility of your code.
- * @version 1.0.7
+ * @version 1.0.11
  * @license GPL-3.0-or-later
  * @link https://github.com/E0SelmY4V/export-tester
  */
@@ -12,9 +12,9 @@ import * as fsp from 'fs/promises';
 import func2code from 'func2code';
 import * as path from 'path';
 import type { CbNxt } from 'scpo-proce';
+import * as scpoProce from 'scpo-proce';
 import { configSchema, InConfig } from './types';
 import schema2class = require('schema2class');
-import scpoProce = require('scpo-proce');
 
 type ModType = 'esm' | 'cjs' | 'ts';
 type EnvirType = Exclude<InConfig['req'], undefined>[number];
@@ -197,9 +197,19 @@ async function test(n: InConfig, tests: { [name: string]: Function; }) {
 	await clear();
 	const conf = factory(n);
 	const findPath = JSON.stringify(conf.pack || './' + path.relative(testsDir, conf.file));
-	const cjs = `var ${conf.sign}=require(${findPath});`;
-	const esm = `import ${conf.sign} from ${findPath};`;
-	const ts = `import ${conf.sign} ${conf.cfg.ts.cjsMod ? `=require(${findPath})` : `from ${findPath}`};`;
+	const cjs = {
+		all: `var ${conf.sign} = require(${findPath});`,
+		def: `var ${conf.sign} = require(${findPath})["default"];`,
+	}[conf.mode.imp];
+	const esm = {
+		all: `import * as ${conf.sign} from ${findPath};`,
+		def: `import ${conf.sign} from ${findPath};`,
+	}[conf.mode.imp];
+	const ts = {
+		all: `import * as ${conf.sign} from ${findPath};`,
+		def: `import ${conf.sign} from ${findPath};`,
+		cjs: `import ${conf.sign} = require(${findPath});`,
+	}[conf.cfg.ts.cjsMod ? 'cjs' : conf.mode.imp];
 	let str = '\nfunction log(...params) { console.log("| ", ...params) }\n';
 	for (var i in tests) str += ''
 		+ `console.log('|\\n+-\\x1b[32m${JSON.stringify(i)}:\\x1b[0m');`
@@ -210,12 +220,16 @@ async function test(n: InConfig, tests: { [name: string]: Function; }) {
 	await out(conf.req, str, { cjs, esm, ts, });
 	const detail: { [name: string]: string; } = {};
 	let err = 0;
-	await scpoProce.snake(conf.req.map(e => async todo => (
-		e in doObj
-			? (detail[e] = await doObj[e](conf), detail[e] && err++)
-			: (detail[e] = 'No such testing enviroument', err++),
-		todo()
-	)));
+	await scpoProce.snake(conf.req.map(e => async todo => {
+		if (e in doObj) {
+			const info = await doObj[e](conf);
+			info && (detail[e] = info, err++);
+		} else {
+			detail[e] = 'No such testing enviroument';
+			err++;
+		}
+		todo();
+	}));
 	return { err, detail };
 }
 async function clear() {
