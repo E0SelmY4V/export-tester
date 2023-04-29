@@ -3,7 +3,10 @@
 	"type": "object",
 	"properties": {
 		"disp": {
-			"type": "object",
+			"type": [
+				"object",
+				"boolean"
+			],
 			"properties": {
 				"path": {
 					"type": "boolean",
@@ -13,7 +16,8 @@
 					"type": "boolean",
 					"default": true
 				}
-			}
+			},
+			"default": true
 		},
 		"req": {
 			"type": "array",
@@ -79,7 +83,7 @@
 			"default": null
 		},
 		"pack": {
-			"type":"string",
+			"type": "string",
 			"default": ""
 		}
 	}

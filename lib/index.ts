@@ -26,9 +26,10 @@ function arr2obj<T extends readonly string[]>(arr: [...T]) {
 	arr.forEach(e => obj[e] = 0);
 	return obj;
 }
-function rainbow(text: string, color: number | Config) {
+function rainbow(text: string, conf: Config, color: number | null = null) {
+	if (!conf.disp) return;
 	if (typeof color === 'number') console.log(`+-------------------\n| \x1b[${color}m ${text} \x1b[0m`);
-	else if (color.disp.stat) console.log(`| ${text}`);
+	else if (typeof conf.disp === 'boolean' ? conf.disp : conf.disp.stat) console.log(`| ${text}`);
 }
 function allFunc<T extends string[]>(list: [...T], callback: Function) {
 	const qObj = arr2obj(list);
@@ -42,8 +43,10 @@ function proce(...list: CbNxt<[Error | null], [Error | null], [string, Error, ..
 	});
 }
 function fork(files: [string, ...string[]], todo: (err?: any) => void, ordo: (msg: string, err: Error) => void, conf: Config) {
-	conf.disp.path && files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(testsDir + e)}\x1b[0m`, conf));
-	child_process.fork(testsDir + files[0]).on('close', num => num ? ordo('RE', Error(`Exit code is ${num}`)) : todo());
+	if (typeof conf.disp === 'boolean' ? conf.disp : conf.disp.path) files.forEach(e => rainbow(`\x1b[4m\x1b[34m${path.normalize(testsDir + e)}\x1b[0m`, conf));
+	child_process.fork(testsDir + files[0], conf.disp ? void 0 : {
+		stdio: 'overlapped',
+	}).on('close', num => num ? ordo('RE', Error(`Exit code is ${num}`)) : todo());
 }
 type ModStr = { [I in ModType]: string };
 function getOut(type: ModType, ext: string) {
@@ -73,7 +76,7 @@ const outObj = {
 } as const;
 const doObj = {
 	ts(conf: Config) {
-		rainbow('TS', 44);
+		rainbow('TS', conf, 44);
 		const ts = conf.cfg.ts;
 		let timer: ReturnType<typeof waitCli>;
 		let cmd = 'tsc';
@@ -116,11 +119,11 @@ const doObj = {
 		);
 	},
 	'node-esm'(conf: Config) {
-		rainbow('Node ESM', 45);
+		rainbow('Node ESM', conf, 45);
 		return doObj.node(conf, 'm');
 	},
 	'node-cjs'(conf: Config) {
-		rainbow('Node CJS', 43);
+		rainbow('Node CJS', conf, 43);
 		return doObj.node(conf, 'c');
 	},
 	webpack(conf: Config, n: 'm' | 'c') {
@@ -176,11 +179,11 @@ const doObj = {
 		);
 	},
 	'webpack-esm'(conf: Config) {
-		rainbow('webpack ESM', 42);
+		rainbow('webpack ESM', conf, 42);
 		return doObj.webpack(conf, 'm');
 	},
 	'webpack-cjs'(conf: Config) {
-		rainbow('webpack CJS', 46);
+		rainbow('webpack CJS', conf, 46);
 		return doObj.webpack(conf, 'c');
 	},
 } as const;

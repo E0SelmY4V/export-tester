@@ -8,13 +8,14 @@ require('..')(
 			},
 		},
 		req: ['node-cjs', 'asd'],
+		disp: true,
 	},
 	{
 		imp() {
 			console.log(s2c);
 		},
 		err() {
-			throw Error('ssd');
+			// throw Error('ssd');
 		},
 	},
 ).then(e => console.log(e));
